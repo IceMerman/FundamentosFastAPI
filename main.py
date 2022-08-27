@@ -3,7 +3,7 @@ from typing import Optional
 #Pydantic
 from pydantic import BaseModel
 # Fast api
-from fastapi import FastAPI, Body
+from fastapi import FastAPI, Body, Query
 
 app = FastAPI()
 
@@ -25,3 +25,10 @@ def home():
 def crate_person(person: Person = Body()):
     #print(person)
     return person
+
+# Validation query parameters
+@app.get('/person/detail')
+def show_person(
+    name: Optional[str] = Query(None, min_length=3, max_length=30),
+    age: str = Query()):
+    return {'name': name, 'age': age}
