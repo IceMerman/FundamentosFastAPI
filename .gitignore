@@ -1,0 +1,7 @@
+# Files
+*.py[cod]
+
+# Folders
+
+venv/
+__pycache__/
