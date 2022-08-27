@@ -1,4 +1,5 @@
 #Python
+from doctest import Example
 from typing import Optional
 from enum import Enum
 #Pydantic
@@ -35,10 +36,22 @@ class Person(BaseModel):
     is_married: Optional[bool] = Field(None)
     email: EmailStr = Field(title='Email')
     
+    class Config:
+        schema_extra = {
+            'example': {
+                'first_name': 'Juan',
+                'last_name': 'Snow',
+                'age': 29,
+                'hair_color': HairColors.brown,
+                'is_married': False,
+                'email': 'juanes@cigre.com'
+            }
+        }
+    
 class Location(BaseModel):
-    city: str = Field(min_length=5, max_length=20)
-    state: str = Field(min_length=5, max_length=20)
-    country: str = Field(min_length=5, max_length=20)
+    city: str = Field(min_length=5, max_length=20, example="Medellin")
+    state: str = Field(min_length=5, max_length=20, example="Antioquia")
+    country: str = Field(min_length=5, max_length=20, example="Colombia")
 
 @app.get('/')
 def home():
@@ -88,3 +101,24 @@ def update_person(
     location: Location = Body()):
     
     return {'person': person, 'location': location}
+
+@app.put('/personData/{person_id}')
+def update_person(
+    person_id: int = Path(
+        title='Person to update',
+        description='This is person id',
+        gt=0
+    ),
+    person: Person = Body()):
+    
+    return person
+
+@app.put('/location/{location_id}')
+def update_location(
+    location_id: int = Path(
+        title='Location to update',
+        description='Location to update',
+        gt=0
+    ),
+    location: Location = Body()):
+    return location
