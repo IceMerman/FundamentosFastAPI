@@ -35,6 +35,7 @@ class Person(BaseModel):
     hair_color: Optional[HairColors] = Field(None)
     is_married: Optional[bool] = Field(None)
     email: EmailStr = Field(title='Email')
+    password: str = Field(min_length=8)
     
     class Config:
         schema_extra = {
@@ -44,7 +45,8 @@ class Person(BaseModel):
                 'age': 29,
                 'hair_color': HairColors.brown,
                 'is_married': False,
-                'email': 'juanes@cigre.com'
+                'email': 'juanes@cigre.com',
+                'password': 'IA123Jk"%P2'
             }
         }
     
@@ -59,7 +61,7 @@ def home():
 
 # Resquest and response body
 
-@app.post('/person/new')
+@app.post('/person', response_model=Person, response_model_exclude=['password'])
 def crate_person(person: Person = Body()):
     #print(person)
     return person
