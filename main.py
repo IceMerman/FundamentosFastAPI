@@ -18,37 +18,33 @@ class HairColors(Enum):
      red: str = 'Red'
 
 # Models 
-class Person(BaseModel):
+
+class PersonBase(BaseModel):
     first_name: str = Field(
         min_length=3,
-        max_length=30
+        max_length=30,
+        example='Miguel'
     )
     last_name: str = Field(
         min_length=3,
-        max_length=30
+        max_length=30,
+        example='Arena'
     )
     age: int = Field(
-        ...,
         gt=0,
-        le=115
+        le=115,
+        example=35
     )
-    hair_color: Optional[HairColors] = Field(None)
-    is_married: Optional[bool] = Field(None)
-    email: EmailStr = Field(title='Email')
-    password: str = Field(min_length=8)
+    hair_color: Optional[HairColors] = Field(None, example=HairColors.brown)
+    is_married: Optional[bool] = Field(None, example=False)
+    email: EmailStr = Field(title='Email', example='juanes@cigre.com')
+        
+class Person(PersonBase):
+    password: str = Field(min_length=8, example='IA123Jk"%P2')
     
-    class Config:
-        schema_extra = {
-            'example': {
-                'first_name': 'Juan',
-                'last_name': 'Snow',
-                'age': 29,
-                'hair_color': HairColors.brown,
-                'is_married': False,
-                'email': 'juanes@cigre.com',
-                'password': 'IA123Jk"%P2'
-            }
-        }
+class PersonOut(PersonBase):
+    ...
+    
     
 class Location(BaseModel):
     city: str = Field(min_length=5, max_length=20, example="Medellin")
@@ -61,9 +57,8 @@ def home():
 
 # Resquest and response body
 
-@app.post('/person', response_model=Person, response_model_exclude=['password'])
+@app.post('/person', response_model=PersonOut)
 def crate_person(person: Person = Body()):
-    #print(person)
     return person
 
 # Validation query parameters
