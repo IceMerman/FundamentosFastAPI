@@ -4,8 +4,9 @@ from typing import Optional
 from enum import Enum
 #Pydantic
 from pydantic import BaseModel, Field, EmailStr
+from pydantic import SecretStr
 # Fast api
-from fastapi import FastAPI, Body, Query, Path
+from fastapi import FastAPI, Body, Query, Path, Form
 from fastapi import status
 
 app = FastAPI()
@@ -46,6 +47,10 @@ class Person(PersonBase):
 class PersonOut(PersonBase):
     ...
     
+
+class LoginOut(BaseModel):
+    username: str = Field(max_length=20, example='Querry2020')
+    message: str = Field(example='Login succesfully')
     
 class Location(BaseModel):
     city: str = Field(min_length=5, max_length=20, example="Medellin")
@@ -131,7 +136,7 @@ def update_person(
 
 @app.put(
     path='/location/{location_id}',
-    status_code=status.HTTP_200_OK)
+    )
 def update_location(
     location_id: int = Path(
         title='Location to update',
@@ -141,3 +146,13 @@ def update_location(
     ),
     location: Location = Body()):
     return location
+
+@app.post(
+    path='/login',
+    response_model=LoginOut,
+    status_code=status.HTTP_200_OK
+)
+def login(
+    username: str = Form(example='JuanesElMocho123'),
+    password: SecretStr = Form(example='Jasda7AS"$JJSP2Ab.')):
+    return LoginOut(username=username, message='OK')
