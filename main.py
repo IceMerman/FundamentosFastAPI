@@ -72,20 +72,23 @@ def show_person(
         min_length=3, 
         max_length=30,
         title='Person name',
-        description='This is the person name, len [3, 30]'),
+        description='This is the person name, len [3, 30]',
+        example='Juan'),
     age: str = Query(
         title='Person age',
-        description='This is the person age, mandatory'
+        description='This is the person age, mandatory',
+        example=32
     )):
     return {'name': name, 'age': age}
 
 # Validations path parameters
-@app.get('/person/detailt/{person_id}')
+@app.get('/person/detail/{person_id}')
 def show_person(
     person_id: int = Path(
         gt=0,
         title='Person age',
-        description='The age of the person you want to see detaitls')):
+        description='The age of the person you want to see detaitls',
+        example=98)):
     return {person_id: 'Exists'}
 
 # Validations: reques body
@@ -95,7 +98,8 @@ def update_person(
     person_id: int = Path(
         title='Person to update',
         description='This is person id',
-        gt=0
+        gt=0,
+        example=122
     ),
     person: Person = Body(),
     location: Location = Body()):
@@ -107,7 +111,8 @@ def update_person(
     person_id: int = Path(
         title='Person to update',
         description='This is person id',
-        gt=0
+        gt=0,
+        example=33
     ),
     person: Person = Body()):
     
@@ -118,7 +123,8 @@ def update_location(
     location_id: int = Path(
         title='Location to update',
         description='Location to update',
-        gt=0
+        gt=0,
+        example=45
     ),
     location: Location = Body()):
     return location
