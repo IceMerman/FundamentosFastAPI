@@ -6,6 +6,7 @@ from enum import Enum
 from pydantic import BaseModel, Field, EmailStr
 # Fast api
 from fastapi import FastAPI, Body, Query, Path
+from fastapi import status
 
 app = FastAPI()
 
@@ -51,18 +52,25 @@ class Location(BaseModel):
     state: str = Field(min_length=5, max_length=20, example="Antioquia")
     country: str = Field(min_length=5, max_length=20, example="Colombia")
 
-@app.get('/')
+@app.get(
+    path='/', 
+    status_code=status.HTTP_200_OK)
 def home():
     return {'Hello': 'World'}
 
 # Resquest and response body
 
-@app.post('/person', response_model=PersonOut)
+@app.post(
+    path='/person', 
+    response_model=PersonOut,
+    status_code=status.HTTP_201_CREATED)
 def crate_person(person: Person = Body()):
     return person
 
 # Validation query parameters
-@app.get('/person/detail')
+@app.get(
+    path='/person/detail',
+    status_code=status.HTTP_200_OK)
 def show_person(
     name: Optional[str] = Query(
         None, 
@@ -79,7 +87,9 @@ def show_person(
     return {'name': name, 'age': age}
 
 # Validations path parameters
-@app.get('/person/detail/{person_id}')
+@app.get(
+    path='/person/detail/{person_id}',
+    status_code=status.HTTP_200_OK)
 def show_person(
     person_id: int = Path(
         gt=0,
@@ -90,7 +100,9 @@ def show_person(
 
 # Validations: reques body
 
-@app.put('/person/{person_id}')
+@app.put(
+    path='/person/{person_id}',
+    status_code=status.HTTP_200_OK)
 def update_person(
     person_id: int = Path(
         title='Person to update',
@@ -103,7 +115,9 @@ def update_person(
     
     return {'person': person, 'location': location}
 
-@app.put('/personData/{person_id}')
+@app.put(
+    path='/personData/{person_id}',
+    status_code=status.HTTP_200_OK)
 def update_person(
     person_id: int = Path(
         title='Person to update',
@@ -115,7 +129,9 @@ def update_person(
     
     return person
 
-@app.put('/location/{location_id}')
+@app.put(
+    path='/location/{location_id}',
+    status_code=status.HTTP_200_OK)
 def update_location(
     location_id: int = Path(
         title='Location to update',
