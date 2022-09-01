@@ -1,15 +1,14 @@
 #Python
-from ast import For
-from doctest import Example
-from typing import Optional
+from email.mime import image
+from typing import Optional, List
 from enum import Enum
-import fastapi
 #Pydantic
 from pydantic import BaseModel, Field, EmailStr
 from pydantic import SecretStr
 # Fast api
 from fastapi import FastAPI
 from fastapi import Body, Query, Path, Form, Header, Cookie
+from fastapi import File, UploadFile
 from fastapi import status
 
 app = FastAPI()
@@ -175,3 +174,26 @@ def contact(
     
 ):
     return user_agent
+
+# Files
+@app.post(
+    path='/post_image',
+    status_code=status.HTTP_200_OK
+)
+def post_image(
+    image: UploadFile = File()
+):
+    return {'Filename': image.filename,
+            'Format': image.content_type,
+            'Size(kB)':len(image.file.read())}
+    
+@app.post(
+    path='/post_images',
+    status_code=status.HTTP_200_OK
+)
+def post_images(
+    images: List[UploadFile] = File()
+):
+    return [{'Filename': image.filename,
+            'Format': image.content_type,
+            'Size(kB)':round(len(image.file.read())/1024, 2)} for image in images]
