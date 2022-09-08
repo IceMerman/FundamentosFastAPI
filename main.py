@@ -61,7 +61,8 @@ class Location(BaseModel):
 
 @app.get(
     path='/', 
-    status_code=status.HTTP_200_OK)
+    status_code=status.HTTP_200_OK,
+    tags=["Persons", "Location", "Images"])
 def home():
     return {'Hello': 'World'}
 
@@ -70,14 +71,16 @@ def home():
 @app.post(
     path='/person', 
     response_model=PersonOut,
-    status_code=status.HTTP_201_CREATED)
+    status_code=status.HTTP_201_CREATED,
+    tags=["Persons"])
 def crate_person(person: Person = Body()):
     return person
 
 # Validation query parameters
 @app.get(
     path='/person/detail',
-    status_code=status.HTTP_200_OK)
+    status_code=status.HTTP_200_OK,
+    tags=["Persons"])
 def show_person(
     name: Optional[str] = Query(
         None, 
@@ -97,7 +100,8 @@ def show_person(
 person_list = [1, 2, 3, 4, 5]
 @app.get(
     path='/person/detail/{person_id}',
-    status_code=status.HTTP_200_OK)
+    status_code=status.HTTP_200_OK,
+    tags=["Persons"])
 def show_person(
     person_id: int = Path(
         gt=0,
@@ -115,7 +119,8 @@ def show_person(
 
 @app.put(
     path='/person/{person_id}',
-    status_code=status.HTTP_200_OK)
+    status_code=status.HTTP_200_OK,
+    tags=["Persons"])
 def update_person(
     person_id: int = Path(
         title='Person to update',
@@ -130,7 +135,8 @@ def update_person(
 
 @app.put(
     path='/personData/{person_id}',
-    status_code=status.HTTP_200_OK)
+    status_code=status.HTTP_200_OK,
+    tags=["Persons"])
 def update_person(
     person_id: int = Path(
         title='Person to update',
@@ -144,6 +150,7 @@ def update_person(
 
 @app.put(
     path='/location/{location_id}',
+    tags=["Location"]
     )
 def update_location(
     location_id: int = Path(
@@ -158,7 +165,8 @@ def update_location(
 @app.post(
     path='/login',
     response_model=LoginOut,
-    status_code=status.HTTP_200_OK
+    status_code=status.HTTP_200_OK,
+    tags=["Persons"]
 )
 def login(
     username: str = Form(example='JuanesElMocho123'),
@@ -168,7 +176,8 @@ def login(
 # Cookies
 @app.post(
     path='/contact',
-    status_code=status.HTTP_200_OK
+    status_code=status.HTTP_200_OK,
+    tags=["About"]
 )
 def contact(
     first_name: str = Form(max_length=20, min_length=1),
@@ -184,7 +193,8 @@ def contact(
 # Files
 @app.post(
     path='/post_image',
-    status_code=status.HTTP_200_OK
+    status_code=status.HTTP_200_OK,
+    tags=["Images"]
 )
 def post_image(
     image: UploadFile = File()
@@ -195,7 +205,8 @@ def post_image(
     
 @app.post(
     path='/post_images',
-    status_code=status.HTTP_200_OK
+    status_code=status.HTTP_200_OK,
+    tags=["Images"]
 )
 def post_images(
     images: List[UploadFile] = File()
