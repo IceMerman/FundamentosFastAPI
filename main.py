@@ -72,8 +72,18 @@ def home():
     path='/person', 
     response_model=PersonOut,
     status_code=status.HTTP_201_CREATED,
-    tags=["Persons"])
+    tags=["Persons"],
+    summary="Create a person in the app")
 def crate_person(person: Person = Body()):
+    """This path operation create a new person and add it to the database
+
+    Args:
+    - Request body parameters
+        - person (**Person**) : A Person model with first name, last name, age, hair color, married status and email.
+
+    Returns:  
+        - **Person**: the person object model created
+    """
     return person
 
 # Validation query parameters
