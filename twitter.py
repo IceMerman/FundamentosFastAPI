@@ -1,3 +1,9 @@
+#Python
+
+#Custom
+import models
+
+#Fast api
 from fastapi import FastAPI
 
 app = FastAPI()
