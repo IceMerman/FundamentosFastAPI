@@ -1,7 +1,7 @@
 #Python
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from typing import Optional
-from uuid import UUID
+from uuid import UUID, uuid4
 from dateutil import tz
 
 #Pydantic
@@ -10,7 +10,7 @@ from pydantic import BaseModel, EmailStr, Field, SecretStr, validator
 
 # User models
 class UserBase(BaseModel):
-    user_id: UUID = Field(...)
+    user_id: UUID = Field(default_factory=uuid4)
     email: EmailStr = Field(..., example='jhon.snow@winterfall.com')    
 class UserLogin(UserBase):
     password: str = Field(
@@ -22,7 +22,7 @@ class UserLogin(UserBase):
 class User(UserBase):
     first_name: str = Field(..., min_length=3, max_length=50, example='Jhon')
     last_name: str = Field(..., min_length=3, max_length=50, example='Snow')
-    birth_date: Optional[date] = Field(None, example=date.today())
+    birth_date: Optional[date] = Field(None, example=date.today() - timedelta(weeks=19*52))
     
     @validator('birth_date')
     def is_adult(cls, v: date):
@@ -31,6 +31,9 @@ class User(UserBase):
         if delta.days/364 < 18:
             raise ValueError('Must be over 18!')
         return v
+    
+class UserRegister(User, UserLogin):
+    ...
     
 # Tweet models
 class Tweet(BaseModel):

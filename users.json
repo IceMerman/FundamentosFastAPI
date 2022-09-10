@@ -1,0 +1,18 @@
+[
+  {
+    "user_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    "email": "jhon.snow@winterfall.com",
+    "password": "nePjXb%L!2W9_M?jUYZ?v$CKU",
+    "first_name": "Jhon",
+    "last_name": "Snow",
+    "birth_date": "2003-10-04"
+  },
+  {
+    "user_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    "email": "jhon.snow2@winterfall.com",
+    "password": "nePjXb%L!2W9_M?jUYZ?v$CKU",
+    "first_name": "Jhon2",
+    "last_name": "Snow2",
+    "birth_date": "2003-10-04"
+  }
+]

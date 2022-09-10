@@ -1,11 +1,13 @@
 #Python
+from json import load, loads, dump
 
 #Custom
 from typing import Dict, List, NoReturn
-from models import Tweet, User
+from unittest import result
+from models import Tweet, User, UserRegister
 
 #Fast api
-from fastapi import FastAPI, Path
+from fastapi import Body, FastAPI, Path
 from fastapi import status
 
 app = FastAPI()
@@ -26,8 +28,27 @@ def home() -> Dict[str, str]:
     summary='Register a user',
     tags=['Auth','Users']
 )
-def signup() -> User:
-    pass
+def signup(user: UserRegister = Body()) -> User:
+    """This path opeation creates a new user
+    
+    args:
+      - Resques body parameters
+        - user: UserRegister
+
+    Returns:
+      - User: a json with those features 
+        - user_id: UUID
+        - email: str
+        - first_name: str
+        - last_name: str
+        - birth_date: str
+    """
+    with open('users.json','r+', encoding='utf-8') as f:
+        results: list = load(f)
+        results.append(loads(user.json()))
+        f.seek(0)
+        dump(results, f, indent=2)
+    return user
 
 ### Authentica the user
 @app.post(
