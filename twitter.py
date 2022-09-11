@@ -217,7 +217,7 @@ def create_tweet(tweet: Tweet = Body()) -> Tweet:
     tags=['Tweets']
 )
 def list_tweet() -> List[Tweet]:
-    pass
+    return tm.readOrUpdate()
 
 ### Show a tweet
 @app.get(
@@ -228,9 +228,15 @@ def list_tweet() -> List[Tweet]:
     tags=['Tweets']
 )
 def get_tweet(
-    tweet_id: int = Path(gt=0, title='Tweet ID', description='Retrieve a tweet', example=1)
+    tweet_id: str = Path(title='Tweet ID', description='Retrieve a tweet', example='3fa85f64-5717-4562-b3fc-2c963f66afa7')
     ) -> Tweet:
-    pass
+    tweet = tm.get_tweet_by_id(tweet_id)
+    if tweet is None:
+        raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail='tweet not found'
+            )
+    return tweet
 
 ### Update a tweet
 @app.put(
@@ -241,9 +247,16 @@ def get_tweet(
     tags=['Tweets']
 )
 def update_tweet(
-    tweet_id: int = Path(gt=0, title='Tweet ID', description='Retrieve a tweet', example=1)
+    tweet_id: str = Path(title='Tweet ID', description='Retrieve a tweet', example='3fa85f64-5717-4562-b3fc-2c963f66afa8'),
+    content: str = Form()
     ) -> Tweet:
-    pass
+    tweet = tm.update_tweet(tweet_id, content)
+    if tweet is None:
+        raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail='tweet not found'
+            )
+    return tweet
 
 ### Delete a tweet
 @app.delete(
@@ -253,6 +266,11 @@ def update_tweet(
     tags=['Tweets']
 )
 def delete_tweet(
-    tweet_id: int = Path(gt=0, title='Tweet ID', description='Retrieve a tweet', example=1)
+    tweet_id: str = Path(title='Tweet ID', description='Retrieve a tweet', example='3fa85f64-5717-4562-b3fc-2c963f66afa8')
     ) -> NoReturn:
-    pass
+    res = tm.delete_tweet(tweet_id)
+    if 'error' in res:
+        raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail='tweet not found'
+            )

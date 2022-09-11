@@ -104,12 +104,42 @@ class UserMan(JsonMan):
             return {'error': 'User not found'}
         del user_db[idx]
         
-        print()
-        print(user_db)
-        #self.write(user_db, force=True)
+        self.write(user_db, force=True)
         return {'status': 'Done'}
         
     
 class TweetMan(JsonMan):
     def __init__(self) -> None:
         super().__init__('tweets.json')
+        
+    def get_tweet_by_id(self, tweet_id: str):
+        tweet_db = self.readOrUpdate()
+        print(tweet_id)
+        for tweet in tweet_db:
+            if tweet['tweet_id'] == tweet_id:
+                return tweet
+            
+    def update_tweet(self, tweet_id: str, content: str):
+        tweet_db = self.readOrUpdate()
+        print(tweet_id)
+        for tweet in tweet_db:
+            if tweet['tweet_id'] == tweet_id:
+                if content != '':
+                    tweet['content'] = content
+                    tweet['updated_at'] = str(datetime.utcnow())
+                    self.write(tweet_db, force=True)
+                return tweet
+    
+    def delete_tweet(self, tweet_id: str):
+        tweet_db = self.readOrUpdate()
+        found = False
+        for idx, tweet in enumerate(tweet_db):
+            if tweet['tweet_id'] == tweet_id:
+                found = True
+                break
+        
+        if found:
+            del tweet_db[idx]
+            self.write(tweet_db, force=True)
+            return {'status': 'done'}
+        return {'error': 'not found'}
