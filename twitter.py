@@ -70,7 +70,21 @@ def login() -> User:
     tags=['Users']
 )
 def list_users() -> List[User]:
-    pass
+    """This path opeation return a json with the user information of all the registered users
+    
+    args:
+
+    Returns:
+      - List[User]: a json with those features 
+        - user_id: UUID
+        - email: str
+        - first_name: str
+        - last_name: str
+        - birth_date: str
+    """
+    with open('users.json','r+', encoding='utf-8') as f:
+        results: list = load(f)
+    return results
 
 ### Get a user
 @app.get(
