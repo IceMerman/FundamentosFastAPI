@@ -4,6 +4,8 @@ from json import load, loads, dump
 #Custom
 from typing import Dict, List, NoReturn
 from unittest import result
+
+from pydantic import Json
 from models import Tweet, User, UserRegister
 
 #Fast api
@@ -14,9 +16,26 @@ app = FastAPI()
 
 # Path operations
 
-@app.get(path='/')
-def home() -> Dict[str, str]:
-    return {'Twitter API': 'Active'}
+@app.get(
+    path='/',
+    response_model=List[Tweet],
+    status_code=status.HTTP_200_OK,
+    summary="List all tof the tweets in the site",
+    tags=["Tweets"])
+def home() -> List[Tweet]:
+    """This path operation show all of the tweets
+
+    Returns:
+        json: json containing all the tweets, features:
+          - tweet_id: UUID
+          - content: str
+          - created_at: date
+          - updated_at: Optional[date]
+          - by: User
+    """
+    with open('tweets.json','r+', encoding='utf-8') as f:
+        results: list = load(f)
+    return results
 
 ## Users
 
