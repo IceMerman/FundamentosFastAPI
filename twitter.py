@@ -2,17 +2,20 @@
 from json import load, loads, dump
 
 #Custom
-from typing import Dict, List, NoReturn
-from unittest import result
+from models import Tweet, User, UserBase, UserRegister
+from backends import TweetMan, UserMan
 
-from pydantic import Json
-from models import Tweet, User, UserRegister
+#Pydantic
+from typing import Dict, List, NoReturn
+from pydantic import Json, SecretStr
 
 #Fast api
-from fastapi import Body, FastAPI, Path
-from fastapi import status
+from fastapi import Body, FastAPI, Form, Path
+from fastapi import status, HTTPException
 
 app = FastAPI()
+tm = TweetMan()
+um = UserMan()
 
 # Path operations
 
@@ -33,9 +36,7 @@ def home() -> List[Tweet]:
           - updated_at: Optional[date]
           - by: User
     """
-    with open('tweets.json','r+', encoding='utf-8') as f:
-        results: list = load(f)
-    return results
+    return tm.readOrUpdate()
 
 ## Users
 
@@ -62,11 +63,7 @@ def signup(user: UserRegister = Body()) -> User:
         - last_name: str
         - birth_date: str
     """
-    with open('users.json','r+', encoding='utf-8') as f:
-        results: list = load(f)
-        results.append(loads(user.json()))
-        f.seek(0)
-        dump(results, f, indent=2)
+    um.readOrUpdate(user)
     return user
 
 ### Authentica the user
@@ -77,8 +74,17 @@ def signup(user: UserRegister = Body()) -> User:
     summary='Login with user',
     tags=['Auth', 'Users']
 )
-def login() -> User:
-    pass
+def login(
+    email: str = Form(),
+    pwd: SecretStr = Form()) -> User:
+    user_db = um.login(email, pwd)
+    if user_db is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail='This person doesn\'t exist'
+        )
+    return user_db
+    
 
 ### Get all users
 @app.get(
