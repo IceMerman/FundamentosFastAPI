@@ -1,4 +1,5 @@
 #Python
+from datetime import date, datetime
 from json import load, loads, dump
 
 #Custom
@@ -7,7 +8,7 @@ from backends import TweetMan, UserMan
 
 #Pydantic
 from typing import Dict, List, NoReturn
-from pydantic import Json, SecretStr
+from pydantic import EmailStr, Json, SecretStr
 
 #Fast api
 from fastapi import Body, FastAPI, Form, Path
@@ -120,9 +121,15 @@ def list_users() -> List[User]:
     tags=['Users']
 )
 def retrieve_user(
-    user_id: int = Path(gt=0, title='User ID', description='The ID of the user to retrieve', example=1)
+    user_id: str = Path(title='User ID', description='The ID of the user to retrieve', example='3fa85f64-5717-4562-b3fc-2c963f66afa6')
     ) -> User:
-    pass
+    user_db = um.getUserbyID(user_id)
+    if user_db is None:
+        raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail='This person doesn\'t exist'
+            )
+    return user_db
 
 ### Update a user
 @app.put(
@@ -133,9 +140,23 @@ def retrieve_user(
     tags=['Users']
 )
 def update_user(
-    user_id: int = Path(gt=0, title='User ID', description='The ID of the user to update', example=1)
+    user_id: str = Path(title='User ID', description='The ID of the user to update', example='3fa85f64-5717-4562-b3fc-2c963f66afa7'),
+    email: EmailStr = Form(),
+    old_password: SecretStr = Form(),
+    new_password: SecretStr = Form(),
+    repeat_new_password: SecretStr = Form(),
+    first_name: str = Form(),
+    last_name: str = Form(),
+    #birth_date: date = Form()
     ) -> User:
-    pass
+    update_status = um.updateUser(user_id, old_password, new_password, repeat_new_password, first_name, last_name, email, birth_date='')
+    if 'error' in update_status:
+        raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=update_status['error']
+            )
+    return update_status
+    
 
 ### Delete a user
 @app.delete(
@@ -145,9 +166,14 @@ def update_user(
     tags=['Users']
 )
 def delete_user(
-    user_id: int = Path(gt=0, title='User ID', description='The ID of the user to delete', example=1)
+    user_id: str = Path(title='User ID', description='The ID of the user to delete', example=1)
     ) -> NoReturn:
-    pass
+    res = um.delete_user(user_id)
+    if 'error' in res:
+        raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=res['error']
+            )
 
 ## Tweets
 

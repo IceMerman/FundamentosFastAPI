@@ -1,7 +1,9 @@
+from datetime import datetime
+import secrets
 from typing import List, Union
 from json import load, loads, dump
 
-from pydantic import SecretStr
+from pydantic import EmailStr, SecretStr
 
 from models import Tweet, User, UserBase, UserRegister
 
@@ -50,12 +52,63 @@ class UserMan(JsonMan):
     def login(self, email: str, pwd: SecretStr) -> dict:
         dbUsers = self.readOrUpdate()
         for user in dbUsers:
-            print(user)
             if user['email'] == email and user['password'] == pwd.get_secret_value():
                 return user
     
-    def update(self):
-        pass
+    def getUserbyID(self, user_id: str):
+        user_db = self.readOrUpdate()
+        for user in user_db:
+            if user['user_id'] == user_id:
+                return user
+            
+    def updateUser(self, user_id: str, old_pwd: secrets, new_pwd: secrets, rep_new_pwd: secrets, 
+        first_name: str, last_name: str, email: EmailStr,
+        birth_date: datetime):
+        
+        user_db = self.readOrUpdate()
+        
+        found = False
+        for user_u in user_db:
+            if user_u['user_id'] == user_id:
+                found = True
+                
+                if new_pwd.get_secret_value() != rep_new_pwd.get_secret_value():
+                    return {'error': 'New password doesnt match'}
+                if old_pwd.get_secret_value() != user_u['password']:
+                    return {'error': 'Old password doesnt match'}
+                
+                if new_pwd != '':
+                    user_u['password'] = new_pwd.get_secret_value()
+                if first_name != '':
+                    user_u['first_name'] = first_name
+                if last_name != '':
+                    user_u['last_name'] = last_name
+                if birth_date != '':
+                    user_u['birth_date'] = birth_date
+                if email != '':
+                    user_u['email'] = email
+
+                self.write(user_db, force=True)
+                return user_u
+        if not found:
+            return {'error': 'User not found'}
+        
+    def delete_user(self, user_id: str):
+        user_db = self.readOrUpdate()
+        print(user_db)
+        found = False
+        for idx, user_u in enumerate(user_db):
+            if user_u['user_id'] == user_id:
+                found = True
+        if not found:
+            return {'error': 'User not found'}
+        del user_db[idx]
+        
+        print()
+        print(user_db)
+        #self.write(user_db, force=True)
+        return {'status': 'Done'}
+        
     
 class TweetMan(JsonMan):
     def __init__(self) -> None:
