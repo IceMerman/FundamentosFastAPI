@@ -134,8 +134,28 @@ def delete_user(
     summary='Create a new tweet',
     tags=['Tweets']
 )
-def create_tweet() -> Tweet:
-    pass
+def create_tweet(tweet: Tweet = Body()) -> Tweet:
+    """This path opeation creates a new tweet
+    
+    args:
+      - Resques body parameters
+        - tweet: Tweet
+
+    Returns:
+      - tweet: a json with those features 
+          - tweet_id: UUID
+          - content: str
+          - created_at: date
+          - updated_at: Optional[date]
+          - by: User
+    """
+    print(tweet)
+    with open('tweets.json','r+', encoding='utf-8') as f:
+        results: list = load(f)
+        results.append(loads(tweet.json()))
+        f.seek(0)
+        dump(results, f, indent=2)
+    return tweet
 
 ### Show all tweets
 @app.get(

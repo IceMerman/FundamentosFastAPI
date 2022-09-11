@@ -37,8 +37,8 @@ class UserRegister(User, UserLogin):
     
 # Tweet models
 class Tweet(BaseModel):
-    tweet_id: UUID = Field()
-    content: str = Field(..., min_length=1, max_length=300, example='Example tweet')
-    created_at: date = Field(default=datetime.utcnow()) #.replace(tzinfo=tz.tzutc())
-    updated_at: Optional[date] = Field(default=datetime.utcnow()) #.replace(tzinfo=tz.tzutc())
-    by: User = Field(...)
+    tweet_id: UUID = Field(default_factory=uuid4)
+    content: str = Field(min_length=1, max_length=300, example='Example tweet')
+    created_at: datetime = Field(default_factory=datetime.utcnow()) #.replace(tzinfo=tz.tzutc())
+    updated_at: Optional[datetime] = Field(default_factory=datetime.utcnow()) #.replace(tzinfo=tz.tzutc())
+    by: UserBase = Field()
